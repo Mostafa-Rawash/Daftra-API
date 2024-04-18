@@ -105,7 +105,7 @@ class Daftra_API{
 		  'Content-Type' => 'application/json',
 		  'APIKEY' => self::$token
 		);
-
+		
 		$response = wp_remote_post( 
 		  $url,
 		  array(
@@ -117,8 +117,9 @@ class Daftra_API{
             'httpversion' => '1.0',
             'redirection' => 5,
 			'body' => $body,
-		  )
+			)
 		);
+
 		return json_decode( wp_remote_retrieve_body( $response ) ) ;
 
 	}
@@ -156,7 +157,7 @@ class Daftra_API{
 		// format data to be clear to be used directly
 		return $response;
 	}
-
+	
 	/**
 	 * Get result from api
 	 * 
@@ -164,14 +165,16 @@ class Daftra_API{
 	 * @since	1.6.0
 	 * @return	array	paymanet process status
 	 */
-	public static function add_invoice( $order_id, $daftra_invoice_id = '', $paid = false ){
-		if( empty ( $daftra_invoice_id ) ) {
+	public static function add_invoice( $order_id, $daftra_invoice_id, $paid = false ){
+		if( empty($daftra_invoice_id) ) {
 			$method = 'POST' ;
 			$url = self::get_endpoitn_url( 'invoices' );
 		}else{
 			$method = 'PUT' ;
 			$url = self::get_endpoitn_url( 'invoices/'.$daftra_invoice_id );
 		}
+		
+
 		$order = wc_get_order( $order_id );
 		$client_id = get_user_meta( $order->get_user_id(), 'daftra_user_id', true );
 
@@ -474,7 +477,7 @@ class Daftra_API{
 			"credit_limit"=> 0,
 			"credit_period"=> 0
 		];
-		echo "$url    " . json_encode($body) . "  " ;
+		// echo "$url    " . json_encode($body) . "  " ;
         // wp_die( prr( $body  ) );
 		$client_id = self::create_connection( $url, 'PUT', json_encode( $body ) );
         

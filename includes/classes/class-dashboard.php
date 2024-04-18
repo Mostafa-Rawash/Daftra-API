@@ -196,40 +196,32 @@ class Daftra_Dashboard{
            
         }
 
+
          // sync orders
-        if( isset( $_POST['sync_orders'] )  && $_POST['sync_orders'] === 'true' ){
+         if( isset( $_POST['sync_orders'] )  && $_POST['sync_orders'] === 'true' ){
 
             $order_args = array(
+                'type' => 'shop_order',
+                'posts_per_page' => $sync_number,
                 'status' => array ('wc-completed', 'wc-processing'),
-                'limit' => -1,
-                'type' => 'shop_order'
+                'meta_query' => array(
+                    array(
+                        'key' => 'daftra_invoice_id',
+                        'compare' => 'NOT EXISTS'
+                    ),
+                  )
             );
-            
-            $orders = wc_get_orders($args);
-
-
-            // $order_args = array(
-            //     // 'post_type' => 'shop_order',
-            //     // 'posts_per_page' => $sync_number,
-            //     // 'post_status' => array ('wc-completed', 'wc-processing'),
-            //     'meta_query' => array(
-            //         array(
-            //             'key' => 'daftra_invoice_id',
-            //             'compare' => 'NOT EXISTS'
-            //         ),
-            //       )
-            // );
             $order_args['fields'] = 'ids';
-            // $orders = get_posts( $order_args );
-            echo json_encode($orders);
+            $orders = wc_get_orders( $order_args );
+
             if( !empty( $orders ) ){ 
-                foreach ( (array)$orders as $order_id ) {
-                    $sync_invoice = Daftra_Sync::ajax_sync_invoice( $order_id );
+                foreach ( (array)$orders as $order ) {
+                    $sync_invoice = Daftra_Sync::ajax_sync_invoice( $order->get_id() );
                 }
 
               //not_completed;
               echo wp_send_json( array(
-                'repeat'=> true, 
+                // 'repeat'=> true, 
                 'success' => null , 
                 'msg' => 'Done Sync '. count($orders) .' invoice',
                 'response' => $sync_invoice, 

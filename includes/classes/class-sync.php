@@ -123,7 +123,6 @@ class Daftra_Sync{
 
         include_once DAFTRA_PLUGIN_DIR. 'includes/classes/class-api-connection.php';
         $order = wc_get_order( $order_id );
-
         $daftra_invoice_id = get_post_meta( $order_id, 'daftra_invoice_id', true );
         if( $order->get_status() === "completed"  ) {
             $response = Daftra_API::add_invoice( $order_id, $daftra_invoice_id, true );
